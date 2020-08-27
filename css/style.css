@@ -10,13 +10,14 @@ body {
   background-color: #f4f4f4;
 }
 
-.center {
+.container {
   height: 100vh;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.calc {
+.container .calc {
   resize: both;
   overflow: auto;
   height: 30rem;
@@ -27,25 +28,61 @@ body {
   background-color: grey;
   display: grid;
   grid-template-rows: 3rem 1fr 4rem 10rem;
+  border: solid 1px #636363;
 }
 
-.header {
+.container .calc .header {
   background-color: orange;
   grid-row: 1/2;
   cursor: move;
+  border-bottom: solid 1px #636363;
 }
 
-.display {
-  background-color: blue;
+.container .calc .display {
   grid-row: 2/3;
+  border-bottom: solid 1px #636363;
+  color: #f4f4f4;
+  display: grid;
+  grid-template-columns: 2fr 2ch 1fr;
+  align-items: end;
+  font-family: 'Nunito', sans-serif;
+  font-size: 1.5rem;
+  overflow: hidden;
 }
 
-.equation {
-  background-color: red;
+.container .calc .display .past-equations {
+  padding-left: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.container .calc .display .equal-signs {
+  padding: 0 0.5rem 0 0.5rem;
+  overflow: hidden;
+}
+
+.container .calc .display .past-results {
+  text-align: right;
+  padding-right: 0.5rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.container .calc .equation {
+  background-color: #444444;
+  color: #f4f4f4;
+  font-family: 'Nunito', sans-serif;
+  font-size: 2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  display: grid;
+  align-items: center;
+  padding-left: 0.5rem;
   grid-row: 3/4;
+  border-bottom: solid 1px #636363;
 }
 
-.buttons {
+.container .calc .buttons {
   grid-row: 4/5;
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -54,7 +91,7 @@ body {
   padding: 0.7rem;
 }
 
-.buttons .button {
+.container .calc .buttons .button {
   background-color: #f4f4f4;
   border-radius: 0.2rem;
   display: grid;
@@ -62,8 +99,14 @@ body {
   font-family: 'Nunito', sans-serif;
   font-weight: 600;
   font-size: 0.7rem;
+  cursor: pointer;
 }
 
-.buttons .equals {
+.container .calc .buttons .equals {
   grid-column: 5/7;
+  background-color: orange;
+}
+
+.calc::-webkit-resizer {
+  display: none;
 }
