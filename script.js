@@ -77,46 +77,57 @@ function addToScreen(e) {
 			equation.innerHTML = "";
 			toCalculate = "";
 			break;
+
 		case "divide":
 			equation.innerHTML += "&#247;";
 			toCalculate += "/";
 			break;
+
 		case "multiply":
 			equation.innerHTML += "x";
 			toCalculate += "*";
 			break;
+
 		case "open-bracket":
 			equation.innerHTML += "(";
 			toCalculate += "(";
 			break;
+
 		case "close-bracket":
 			equation.innerHTML += ")";
 			toCalculate += ")";
 			break;
+
 		case "subtract":
 			equation.innerHTML += "-";
 			toCalculate += "-";
 			break;
+
 		case "add":
 			equation.innerHTML += "+";
 			toCalculate += "+";
 			break;
+
 		case "power":
 			equation.innerHTML += "^";
 			toCalculate += "^";
 			break;
+
 		case "sqrt":
 			equation.innerHTML += "&#8730;";
 			toCalculate += "$";
 			break;
+
 		case "dot":
 			equation.innerHTML += ".";
 			toCalculate += "."
 			break;
+
 		case "back":
 			equation.innerHTML = equation.innerHTML.slice(0, -1);
 			toCalculate = toCalculate.slice(0, -1);
 			break;
+
 		case "equals":
 			if (toCalculate) {
 				pastEquations.innerHTML += equation.textContent + "<br>";
@@ -126,6 +137,7 @@ function addToScreen(e) {
 				toCalculate = "";
 			}
 			break;
+
 		default:
 			equation.innerHTML += data;
 			toCalculate += data;
@@ -134,8 +146,66 @@ function addToScreen(e) {
 
 function makeCalculation(calculation) {
 	let converted = convertToReversePolishNotation(calculation);
+	console.log(converted);
 }
 
 function convertToReversePolishNotation(toConvert) {
-	console.log(toConvert);
+	let stack = [];
+	let output = [];
+	let temp = "";
+	const precedence = { "+": 1, "-": 1 , "x": 2, "/": 2, "^": 3, "$": 3 };
+
+	if ("+-x/(^$.".includes(toConvert[toConvert.length-1])) {
+		toConvert = toConvert.slice(0, -1);
+	}
+
+	for (let c of toConvert) {
+		if ("0123456789.%".includes(c)) {
+			temp += c;
+		}
+		else if ("+-x/^$".includes(c)) {
+			if (temp) {
+				output.push(temp);
+				temp = "";
+			}
+			while ((stack.length > 0) && ((precedence[stack[stack.length-1]] > precedence[c]) || 
+								(precedence[stack[stack.length-1]] === precedence[c] && "+-x/".includes(c)) && (stack[stack.length-1] !== "("))) {
+				output.push(stack.pop());
+			}
+			stack.push(c);
+		}
+		else if (c === "(") {
+			if (temp) {
+				output.push(temp);
+				temp = "";
+			}
+			stack.push(c);
+		}
+		else if (c === ")") {
+			if (temp) {
+				output.push(temp);
+				temp = "";
+			}
+			while (stack[stack.length-1] !== "(") {
+				console.log(stack)
+				if (stack.length === 0) {
+					return false;
+				}
+				output.push(stack.pop());
+			}
+			if (stack[stack.length-1] === "(") {
+				stack.pop();
+			}
+		}
+	}
+
+	if (temp) {
+		output.push(temp);
+	}
+
+	while (stack.length > 0) {
+		output.push(stack.pop());
+	}
+
+	return output;
 }
