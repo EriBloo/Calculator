@@ -78,49 +78,14 @@ function addToScreen(e) {
 			toCalculate = "";
 			break;
 
-		case "divide":
+		case "/":
 			equation.innerHTML += "&#247;";
 			toCalculate += "/";
-			break;
-
-		case "multiply":
-			equation.innerHTML += "x";
-			toCalculate += "*";
-			break;
-
-		case "open-bracket":
-			equation.innerHTML += "(";
-			toCalculate += "(";
-			break;
-
-		case "close-bracket":
-			equation.innerHTML += ")";
-			toCalculate += ")";
-			break;
-
-		case "subtract":
-			equation.innerHTML += "-";
-			toCalculate += "-";
-			break;
-
-		case "add":
-			equation.innerHTML += "+";
-			toCalculate += "+";
-			break;
-
-		case "power":
-			equation.innerHTML += "^";
-			toCalculate += "^";
 			break;
 
 		case "sqrt":
 			equation.innerHTML += "&#8730;";
 			toCalculate += "$";
-			break;
-
-		case "dot":
-			equation.innerHTML += ".";
-			toCalculate += "."
 			break;
 
 		case "back":
@@ -169,7 +134,7 @@ function convertToReversePolishNotation(toConvert) {
 				temp = "";
 			}
 			while ((stack.length > 0) && ((precedence[stack[stack.length-1]] > precedence[c]) || 
-								(precedence[stack[stack.length-1]] === precedence[c] && "+-x/".includes(c)) && (stack[stack.length-1] !== "("))) {
+					(precedence[stack[stack.length-1]] === precedence[c] && "+-x/".includes(c)) && (stack[stack.length-1] !== "("))) {
 				output.push(stack.pop());
 			}
 			stack.push(c);
@@ -187,7 +152,6 @@ function convertToReversePolishNotation(toConvert) {
 				temp = "";
 			}
 			while (stack[stack.length-1] !== "(") {
-				console.log(stack)
 				if (stack.length === 0) {
 					return false;
 				}
