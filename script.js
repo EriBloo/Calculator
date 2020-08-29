@@ -78,7 +78,7 @@ function addToScreen(e) {
 			toCalculate = "";
 			break;
 
-		case "/":
+		case "divide":
 			equation.innerHTML += "&#247;";
 			toCalculate += "/";
 			break;
@@ -133,6 +133,9 @@ function convertToReversePolishNotation(toConvert) {
 				output.push(temp);
 				temp = "";
 			}
+			else if (!temp && c !== "$") {
+				return false;
+			}
 			while ((stack.length > 0) && ((precedence[stack[stack.length-1]] > precedence[c]) || 
 					(precedence[stack[stack.length-1]] === precedence[c] && "+-x/".includes(c)) && (stack[stack.length-1] !== "("))) {
 				output.push(stack.pop());
@@ -140,10 +143,6 @@ function convertToReversePolishNotation(toConvert) {
 			stack.push(c);
 		}
 		else if (c === "(") {
-			if (temp) {
-				output.push(temp);
-				temp = "";
-			}
 			stack.push(c);
 		}
 		else if (c === ")") {
@@ -168,6 +167,9 @@ function convertToReversePolishNotation(toConvert) {
 	}
 
 	while (stack.length > 0) {
+		if (stack[stack.length-1] === "(") {
+			return false;
+		}
 		output.push(stack.pop());
 	}
 
