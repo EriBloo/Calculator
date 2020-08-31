@@ -97,9 +97,17 @@ function addToScreen(e) {
 			if (toCalculate) {
 				pastEquations.innerHTML += equation.textContent + "<br>";
 				equalSigns.innerHTML += "=<br>";
-				makeCalculation(toCalculate);
 				equation.innerHTML = "";
+
+				let calculated = makeCalculation(toCalculate);
 				toCalculate = "";
+
+				if (!calculated) {
+					pastResults.innerHTML += "Invalid<br>";
+				}
+				else {
+					pastResults.innerHTML += calculated + "<br>";
+				}
 			}
 			break;
 
@@ -109,33 +117,84 @@ function addToScreen(e) {
 	}
 }
 
+function calculate(val1, val2, operator) {
+	switch (operator) {
+		case "+":
+			return (val1 + val2);			
+		case "-":
+			return (val1 - val2);
+		case "x":
+			return (val1 * val2);
+		case "/":
+			return (val1 / val2);
+		case "^":
+			return Math.pow(val1, val2);
+		case "$":
+			return Math.pow(val1, 0.5);
+		case "%":
+			return 0.01 * val1;
+	}
+}
+
 function makeCalculation(calculation) {
-	let converted = convertToReversePolishNotation(calculation);
-	console.log(converted);
+	const converted = convertToReversePolishNotation(calculation);
+	const stack = [];
+
+	if (!converted) {
+		return false;
+	}
+
+	for (let c of converted) {
+		let a;
+		let b;
+
+		if (typeof c === "number") {
+			stack.push(c);
+		}
+		else {
+			if ("+-x/^".includes(c)) {
+				b = stack.pop();
+				a = stack.pop();
+			}
+			else {
+				a = stack.pop();
+				b = 0;
+			}
+			stack.push(calculate(a, b, c))
+		}
+	}
+
+	return Math.round((stack[0] + Number.EPSILON) * 100000) / 100000;
 }
 
 function convertToReversePolishNotation(toConvert) {
-	let stack = [];
-	let output = [];
+	// converts to RPN and validates equation
+	const stack = [];
+	const output = [];
 	let temp = "";
-	const precedence = { "+": 1, "-": 1 , "x": 2, "/": 2, "^": 3, "$": 3 };
+	const precedence = { "+": 1, "-": 1 , "x": 2, "/": 2, "^": 3, "$": 3, "%": 4 };
+	toConvert = Array.from(toConvert);
 
 	if ("+-x/(^$.".includes(toConvert[toConvert.length-1])) {
 		toConvert = toConvert.slice(0, -1);
 	}
+	if ("+-x/(^.".includes(toConvert[0])) {
+		toConvert = toConvert.slice(1);
+	}
 
-	for (let c of toConvert) {
-		if ("0123456789.%".includes(c)) {
+	for (let [i, c] of toConvert.entries()) {
+		if ("0123456789.".includes(c)) {
 			temp += c;
 		}
-		else if ("+-x/^$".includes(c)) {
+		else if ("+-x/^$%".includes(c)) {
 			if (temp) {
-				output.push(temp);
+				output.push(parseFloat(temp));
 				temp = "";
 			}
-			else if (!temp && c !== "$") {
+			if ("+-x/^".includes(toConvert[i-1]) && c !== "$") {
 				return false;
 			}
+
 			while ((stack.length > 0) && ((precedence[stack[stack.length-1]] > precedence[c]) || 
 					(precedence[stack[stack.length-1]] === precedence[c] && "+-x/".includes(c)) && (stack[stack.length-1] !== "("))) {
 				output.push(stack.pop());
@@ -147,7 +206,7 @@ function convertToReversePolishNotation(toConvert) {
 		}
 		else if (c === ")") {
 			if (temp) {
-				output.push(temp);
+				output.push(parseFloat(temp));
 				temp = "";
 			}
 			while (stack[stack.length-1] !== "(") {
@@ -158,12 +217,13 @@ function convertToReversePolishNotation(toConvert) {
 			}
 			if (stack[stack.length-1] === "(") {
 				stack.pop();
+				break;
 			}
 		}
 	}
 
 	if (temp) {
-		output.push(temp);
+		output.push(parseFloat(temp));
 	}
 
 	while (stack.length > 0) {
